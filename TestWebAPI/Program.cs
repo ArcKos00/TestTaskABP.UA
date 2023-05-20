@@ -16,9 +16,9 @@ var config = new ConfigurationBuilder()             // Отримання нал
 builder.Services.AddControllers(opts =>
 {
     opts.Filters.Add(typeof(GlobalExceptionFilter));
-}).AddJsonOptions(opts => opts.JsonSerializerOptions.WriteIndented = true); // ��������� ����������� ������� ��� ������� ���������
+}).AddJsonOptions(opts => opts.JsonSerializerOptions.WriteIndented = true); // Підключення глобального фільтру виключень для обробки не відловлених виключень
 
-builder.Services.AddSwaggerGen(); 
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<Random>();
 
@@ -26,7 +26,7 @@ builder.Services.AddTransient<IService, Service>();
 builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();
 builder.Services.AddTransient<IExperimentRepository, ExperimentRepository>();
 
-builder.Services.AddDbContextFactory<AppDbContext>(opts => opts.UseSqlServer(config.GetConnectionString("DefaultConnection"))); // ϳ��������� �� �� �� ������� ���������� � �������������
+builder.Services.AddDbContextFactory<AppDbContext>(opts => opts.UseSqlServer(config.GetConnectionString("DefaultConnection"))); // Підключення контексту бази даних
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy("AllowAll", opti =>
@@ -52,7 +52,7 @@ InitializeDB(app);
 
 app.Run();
 
-// ����� ��� ���-��������� ������������ � ��� �����
+// Метод для пре-заповнення пустої бази даних якщо вона пуста
 void InitializeDB(IHost host)
 {
     using (var scope = host.Services.CreateScope())
@@ -61,6 +61,7 @@ void InitializeDB(IHost host)
         try
         {
             var context = services.GetRequiredService<AppDbContext>();
+            context.Database.EnsureDeletedAsync().Wait();
             context.Database.EnsureCreatedAsync().Wait();
             if (!context.Experiment.Any())
             {
@@ -74,16 +75,19 @@ void InitializeDB(IHost host)
                 });
                 context.SaveChangesAsync().Wait();
             }
-            var service = services.GetRequiredService<IService>();
-            for (int i = 0; i < 43; i++)
+            if (!context.Devices.Any())
             {
-                service.ButtonColor("device" + i);
+                var service = services.GetRequiredService<IService>();
+                for (int i = 0; i < 43; i++)
+                {
+                    service.ButtonColor("deviceBt" + i.ToString()).Wait();
+                }
+                for (int i = 0; i < 100; i++)
+                {
+                    service.Price("devicePr" + i.ToString()).Wait();
+                }
+                context.SaveChangesAsync().Wait();
             }
-            for (int i = 0; i < 100; i++)
-            {
-                service.Price("devicee" + i);
-            }
-            
         }
         catch
         {

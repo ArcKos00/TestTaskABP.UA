@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            fetch('http://localhost:4000/Experiment/GetStatistic')
+                .then(response => response.text())
+                .then(data => {
+                    var paragraph = document.getElementById('jsonString')
+                    paragraph.textContent = data
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+        })
+    </script>
+</head>
+<body>
+    <pre id="jsonString"></pre>
+</body>
+</html>

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var config = new ConfigurationBuilder()             // Отримання даних налаштування для проекту
+var config = new ConfigurationBuilder()             // РћС‚СЂРёРјР°РЅРЅСЏ РЅР°Р»Р°С€С‚СѓРІР°РЅСЊ РґР»СЏ РїСЂРѕРµРєС‚Сѓ
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()
@@ -16,7 +16,7 @@ var config = new ConfigurationBuilder()             // Отримання даних налаштува
 builder.Services.AddControllers(opts =>
 {
     opts.Filters.Add(typeof(GlobalExceptionFilter));
-}).AddJsonOptions(opts => opts.JsonSerializerOptions.WriteIndented = true); // Додавання глобального фільтра для обробки виключень
+}).AddJsonOptions(opts => opts.JsonSerializerOptions.WriteIndented = true); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 builder.Services.AddSwaggerGen(); 
 
@@ -26,7 +26,7 @@ builder.Services.AddTransient<IService, Service>();
 builder.Services.AddTransient<IDeviceRepository, DeviceRepository>();
 builder.Services.AddTransient<IExperimentRepository, ExperimentRepository>();
 
-builder.Services.AddDbContextFactory<AppDbContext>(opts => opts.UseSqlServer(config.GetConnectionString("DefaultConnection"))); // Підключення до бд за строкою підключення у налаштуваннях
+builder.Services.AddDbContextFactory<AppDbContext>(opts => opts.UseSqlServer(config.GetConnectionString("DefaultConnection"))); // ПіпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy("AllowAll", opti =>
@@ -52,7 +52,7 @@ InitializeDB(app);
 
 app.Run();
 
-// метод для пре-створення експериментів у базі даних
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 void InitializeDB(IHost host)
 {
     using (var scope = host.Services.CreateScope())
@@ -72,8 +72,18 @@ void InitializeDB(IHost host)
                 {
                     Name = "price"
                 });
+                context.SaveChangesAsync().Wait();
             }
-            context.SaveChangesAsync().Wait();
+            var service = services.GetRequiredService<IService>();
+            for (int i = 0; i < 43; i++)
+            {
+                service.ButtonColor("device" + i);
+            }
+            for (int i = 0; i < 100; i++)
+            {
+                service.Price("devicee" + i);
+            }
+            
         }
         catch
         {
